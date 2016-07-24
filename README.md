@@ -1,3 +1,4 @@
+This is the source for the app hosted at http://unicode-doctor.myname.nl/
 
 # Issues
 
