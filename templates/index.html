@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Unicode Doctor</title></head>
+<link href="/css/bootstrap.min.css" rel="stylesheet">
+<script type=text/javascript src="/js/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+  var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+</script>
+<body>
+<script type=text/javascript>
+  $(function() {
+    $('a#makeguess').bind('click', function() {
+      var str_good = $('input[name="good"]').val();
+      if (str_good.length < 1) {
+          str_good = "Café";
+      }
+      var str_bad = $('input[name="bad"]').val();
+      if (str_bad.length < 1) {
+          str_bad = "CafÃ©";
+      }
+      $.getJSON($SCRIPT_ROOT + '/api/v1/make_guess', {
+        good: str_good,
+        bad: str_bad,
+      }, function(data) {
+        var html = '<ul>';
+        res = document.getElementById("result");
+        $.each(data, function( key, val ) {
+            html += "<li>" + val['issue'] + "</li>";
+        });
+        html += "</ul>";
+        res.innerHTML = html;
+        $("#result_p").show();
+      });
+      return false;
+    });
+  });
+</script>
+<h1>Unicode Doctor</h1>
+<form>
+
+<fieldset class="form-group">
+<label for="good">Good</label>
+<input type="text" size=50 name="good" class="form-control" id="good" placeholder="Café">
+</fieldset>
+
+<fieldset class="form-group">
+<label for="bad">Bad</label>
+<input type="text" size=50 name="bad" class="form-control" id="bad" placeholder="CafÃ©">
+</fieldset>
+
+<p><a href=# id="makeguess">Make a guess</a><br />&nbsp;<br />
+<p style="display: none" id="result_p">
+Possible issues which could have caused this:<br />
+<span id="result"></span>
+</p>
+
+</form>
+</body>
+</html>
