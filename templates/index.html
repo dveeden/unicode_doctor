@@ -24,19 +24,31 @@
       if (str_bad.length < 1) {
           str_bad = "CafÃ©";
       }
-      $.getJSON($SCRIPT_ROOT + '/api/v1/make_guess', {
-        good: str_good,
-        bad: str_bad,
-      }, function(data) {
-        var html = '<ul>';
-        res = document.getElementById("result");
-        $.each(data, function( key, val ) {
-            html += "<li>" + val['issue'] + "</li>";
-        });
-        html += "</ul>";
-        res.innerHTML = html;
-        $("#result_p").show();
-      });
+      if (str_bad == str_good) {
+            res = document.getElementById("error");
+            res.innerHTML = "Error: Good and Bad are the same..";
+            $("#result_p").hide();
+      } else {
+          $.getJSON($SCRIPT_ROOT + '/api/v1/make_guess', {
+            good: str_good,
+            bad: str_bad,
+          }, function(data) {
+            var html = '<ul>';
+            res = document.getElementById("result");
+            $.each(data, function( key, val ) {
+                html += "<li>" + val['issue'] + "</li>";
+            });
+            html += "</ul>";
+            if (Object.keys(data).length == 0) {
+                res = document.getElementById("error");
+                res.innerHTML = "Error: No result found";
+                $("#result_p").hide();
+            } else {
+                res.innerHTML = html;
+                $("#result_p").show();
+            }
+          });
+      }
       return false;
     });
   });
@@ -59,6 +71,7 @@
 Possible issues which could have caused this:<br />
 <span id="result"></span>
 </p>
+<span id="error"></span>
 
 </form>
 
